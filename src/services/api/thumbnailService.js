@@ -1,25 +1,77 @@
 import thumbnailData from "@/services/mockData/thumbnails.json";
 
+// Freepik API configuration
+const FREEPIK_API_URL = 'https://api.freepik.com/v1/ai/mystic';
+const FREEPIK_API_KEY = import.meta.env.VITE_FREEPIK_API_KEY;
+
 const SIMULATED_DELAY = 300;
 const LIVE_MODE_DELAY = 100;
 
 // Initialize Apper SDK for Flux API
-let apperSDK = null;
-const initializeApperSDK = async () => {
-  if (apperSDK) return apperSDK;
-  
+// Freepik API integration
+const callFreepikAPI = async (prompt, dimensions, liveMode = false) => {
+  if (!FREEPIK_API_KEY) {
+    throw new Error('Freepik API key not configured');
+  }
+
+  // Map dimensions to Freepik aspect ratios
+  const getAspectRatio = (width, height) => {
+    const ratio = width / height;
+    if (Math.abs(ratio - 1) < 0.1) return 'square_1_1';
+    if (Math.abs(ratio - (16/9)) < 0.1) return 'landscape_16_9';
+    if (Math.abs(ratio - (4/3)) < 0.1) return 'landscape_4_3';
+    if (Math.abs(ratio - (9/16)) < 0.1) return 'portrait_9_16';
+    if (Math.abs(ratio - (3/4)) < 0.1) return 'portrait_3_4';
+    return 'landscape_16_9'; // default
+  };
+
+  const aspectRatio = getAspectRatio(dimensions.width, dimensions.height);
+  const resolution = Math.max(dimensions.width, dimensions.height) >= 1920 ? '2k' : '1k';
+
+  const requestBody = {
+    prompt: prompt,
+    aspect_ratio: aspectRatio,
+    resolution: resolution,
+    model: 'realism',
+    creative_detailing: 33,
+    engine: 'automatic',
+    fixed_generation: false,
+    filter_nsfw: true,
+    hdr: 50
+  };
+
   try {
-    if (typeof window !== 'undefined' && window.Apper) {
-      apperSDK = new window.Apper({
-        projectId: import.meta.env.VITE_APPER_PROJECT_ID,
-        publicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
-      });
-      return apperSDK;
+    const response = await fetch(FREEPIK_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-freepik-api-key': FREEPIK_API_KEY
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Freepik API error: ${response.status} ${errorData.message || response.statusText}`);
     }
-    throw new Error('Apper SDK not loaded');
+
+    const data = await response.json();
+    
+    // Handle different response formats
+    if (data.imageUrl) {
+      return data.imageUrl;
+    } else if (data.image_url) {
+      return data.image_url;
+    } else if (data.url) {
+      return data.url;
+    } else if (data.data && data.data.length > 0) {
+      return data.data[0].url || data.data[0].image_url;
+    } else {
+      throw new Error('No image URL found in Freepik API response');
+    }
   } catch (error) {
-    console.warn('Failed to initialize Apper SDK, falling back to mock generation:', error);
-    return null;
+    console.error('Freepik API call failed:', error);
+    throw error;
   }
 };
 
@@ -64,57 +116,43 @@ async generateThumbnail(formData) {
     const dimensions = imageSizeMap[formData.imageSize] || { width: 800, height: 450 };
     
     try {
-      // Initialize Apper SDK
-      const sdk = await initializeApperSDK();
-      
       let imageUrl;
       let isAIGenerated = false;
       
-      if (sdk) {
-        // Create comprehensive prompt for Flux API
+      // Try Freepik API first if API key is available
+      if (FREEPIK_API_KEY) {
+        // Create comprehensive prompt for Freepik API
         const stylePrompts = {
-          minimalist: "clean, simple, modern design with plenty of white space",
-          vibrant: "bright, energetic colors with bold typography and dynamic elements",
-          professional: "corporate, clean, sophisticated design with professional fonts",
-          gaming: "futuristic, neon colors, gaming aesthetic with bold graphics",
-          tech: "modern tech design with gradients, geometric shapes, and tech elements",
-          corporate: "business professional, clean lines, corporate colors"
+          minimalist: "clean, simple, modern design with plenty of white space, minimalist aesthetic",
+          vibrant: "bright, energetic colors with bold typography and dynamic elements, vibrant and eye-catching",
+          professional: "corporate, clean, sophisticated design with professional fonts, business-like appearance",
+          gaming: "futuristic, neon colors, gaming aesthetic with bold graphics, digital art style",
+          tech: "modern tech design with gradients, geometric shapes, and tech elements, futuristic look",
+          corporate: "business professional, clean lines, corporate colors, executive presentation style"
         };
 
         const colorPrompts = {
-          vibrant: "bright, saturated colors",
-          professional: "muted, professional color palette",
-          monochrome: "black and white with subtle grays",
-          corporate: "corporate blue, gray, and white colors",
-          rainbow: "rainbow gradient colors",
-          pastel: "soft pastel colors"
+          vibrant: "bright, saturated, vivid colors with high contrast",
+          professional: "muted, professional color palette with subtle tones",
+          monochrome: "black and white with subtle grays, monochromatic scheme",
+          corporate: "corporate blue, gray, and white colors, business color scheme",
+          rainbow: "rainbow gradient colors with spectrum effects",
+          pastel: "soft pastel colors with gentle, light tones"
         };
 
-        const prompt = `Create a ${formData.imageSize.replace('-', ' ')} thumbnail image for "${formData.title}". ${formData.description ? `Description: ${formData.description}.` : ''} Style: ${stylePrompts[formData.style] || formData.style}. Colors: ${colorPrompts[formData.colorScheme] || formData.colorScheme}. High quality, professional design, ${dimensions.width}x${dimensions.height} resolution.`;
+        const prompt = `Create a stunning ${formData.imageSize.replace('-', ' ')} thumbnail design for "${formData.title}". ${formData.description ? `Content: ${formData.description}.` : ''} Visual style: ${stylePrompts[formData.style] || formData.style}. Color palette: ${colorPrompts[formData.colorScheme] || formData.colorScheme}. High quality, professional design, eye-catching composition, perfect for social media.`;
 
         try {
-          // Call Flux API through Apper SDK
-          const response = await sdk.ai.generateImage({
-            prompt,
-            width: dimensions.width,
-            height: dimensions.height,
-            model: "flux-dev",
-            steps: formData.liveMode ? 20 : 30,
-            guidance_scale: 7.5
-          });
-
-          if (response && response.imageUrl) {
-            imageUrl = response.imageUrl;
-            isAIGenerated = true;
-          } else {
-            throw new Error("No image URL returned from API");
-          }
+          imageUrl = await callFreepikAPI(prompt, dimensions, formData.liveMode);
+          isAIGenerated = true;
         } catch (apiError) {
-          console.warn("Flux API failed, falling back to mock generation:", apiError);
+          console.warn("Freepik API failed, falling back to mock generation:", apiError);
+          await delay(delayTime);
           imageUrl = generateMockImageUrl(formData.title, formData.style, formData.colorScheme, dimensions);
         }
       } else {
         // Fallback to mock generation
+        console.warn("No Freepik API key configured, using mock generation");
         await delay(delayTime);
         imageUrl = generateMockImageUrl(formData.title, formData.style, formData.colorScheme, dimensions);
       }
