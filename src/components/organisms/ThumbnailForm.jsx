@@ -6,7 +6,7 @@ import Input from "@/components/atoms/Input";
 import Textarea from "@/components/atoms/Textarea";
 import Select from "@/components/atoms/Select";
 import FormField from "@/components/molecules/FormField";
-import { ApperIcon } from "@/components/ApperIcon";
+import ApperIcon from "@/components/ApperIcon";
 const ThumbnailForm = ({ onSubmit, loading = false }) => {
 const [formData, setFormData] = useState({
     title: "",
