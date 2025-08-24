@@ -14,6 +14,7 @@ const [formData, setFormData] = useState({
     style: "",
     colorScheme: "",
     format: "png",
+    imageSize: "youtube-thumbnail",
     textEffects: {
       gradient: {
         enabled: false,
@@ -57,6 +58,17 @@ const [formData, setFormData] = useState({
     { value: "gaming", label: "Gaming" },
     { value: "tech", label: "Tech" },
     { value: "corporate", label: "Corporate" }
+];
+
+  const imageSizeOptions = [
+    { value: "youtube-thumbnail", label: "YouTube Thumbnail (1280×720)", dimensions: { width: 1280, height: 720 } },
+    { value: "instagram-post", label: "Instagram Post (1080×1080)", dimensions: { width: 1080, height: 1080 } },
+    { value: "instagram-story", label: "Instagram Story (1080×1920)", dimensions: { width: 1080, height: 1920 } },
+    { value: "facebook-post", label: "Facebook Post (1200×630)", dimensions: { width: 1200, height: 630 } },
+    { value: "facebook-cover", label: "Facebook Cover (1640×859)", dimensions: { width: 1640, height: 859 } },
+    { value: "twitter-post", label: "Twitter Post (1024×512)", dimensions: { width: 1024, height: 512 } },
+    { value: "linkedin-post", label: "LinkedIn Post (1200×627)", dimensions: { width: 1200, height: 627 } },
+    { value: "blog-header", label: "Blog Header (1200×600)", dimensions: { width: 1200, height: 600 } }
   ];
 
   const validateForm = () => {
@@ -70,8 +82,11 @@ const [formData, setFormData] = useState({
       newErrors.style = "Please select a style";
     }
 
-    if (!formData.colorScheme) {
+if (!formData.colorScheme) {
       newErrors.colorScheme = "Please select a color scheme";
+    }
+    if (!formData.imageSize) {
+      newErrors.imageSize = "Please select an image size";
     }
 
     setErrors(newErrors);
@@ -84,7 +99,6 @@ const [formData, setFormData] = useState({
       onSubmit(formData);
     }
   };
-
 const handleInputChange = (field, value) => {
     if (field.includes('.')) {
       const [parent, child, subchild] = field.split('.');
@@ -113,6 +127,7 @@ setFormData({
       style: "",
       colorScheme: "",
       format: "png",
+      imageSize: "youtube-thumbnail",
       textEffects: {
         gradient: {
           enabled: false,
@@ -229,6 +244,26 @@ setFormData({
           >
             <option value="png">PNG (Transparent Background)</option>
             <option value="jpeg">JPEG (Smaller File Size)</option>
+          </Select>
+</FormField>
+
+        {/* Image Size Selection */}
+        <FormField
+          label="Image Size"
+          error={errors.imageSize}
+          required
+        >
+          <Select
+            value={formData.imageSize}
+            onChange={(e) => handleInputChange('imageSize', e.target.value)}
+            error={!!errors.imageSize}
+            placeholder="Select image size for your platform"
+          >
+            {imageSizeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </Select>
         </FormField>
 

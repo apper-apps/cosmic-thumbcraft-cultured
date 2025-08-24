@@ -98,8 +98,11 @@ const ThumbnailPreview = ({
         <div className="p-4 bg-surface/50">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-white/70">Style: {thumbnail.style}</p>
+<p className="text-sm text-white/70">Style: {thumbnail.style}</p>
               <p className="text-sm text-white/70">Format: {thumbnail.format?.toUpperCase()}</p>
+              <p className="text-sm text-white/70">
+                Size: {thumbnail.imageSize?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Custom'}
+              </p>
             </div>
             <div className="text-right">
               <p className="text-sm text-white/70">

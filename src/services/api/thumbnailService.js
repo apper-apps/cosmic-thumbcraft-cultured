@@ -3,9 +3,9 @@ import thumbnailData from "@/services/mockData/thumbnails.json";
 const SIMULATED_DELAY = 300;
 
 // Mock API response for image generation
-const generateMockImageUrl = (title, style, colorScheme) => {
+const generateMockImageUrl = (title, style, colorScheme, dimensions = { width: 800, height: 450 }) => {
   const seed = title.toLowerCase().replace(/\s+/g, '-');
-  return `https://picsum.photos/800/450?random=${seed}-${style}-${colorScheme}`;
+  return `https://picsum.photos/${dimensions.width}/${dimensions.height}?random=${seed}-${style}-${colorScheme}`;
 };
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -33,20 +33,32 @@ async generateThumbnail(formData) {
       throw new Error("AI image generation service is temporarily unavailable. Please try again.");
     }
 
+    // Get dimensions based on selected image size
+    const imageSizeMap = {
+      "youtube-thumbnail": { width: 1280, height: 720 },
+      "instagram-post": { width: 1080, height: 1080 },
+      "instagram-story": { width: 1080, height: 1920 },
+      "facebook-post": { width: 1200, height: 630 },
+      "facebook-cover": { width: 1640, height: 859 },
+      "twitter-post": { width: 1024, height: 512 },
+      "linkedin-post": { width: 1200, height: 627 },
+      "blog-header": { width: 1200, height: 600 }
+    };
+
+    const dimensions = imageSizeMap[formData.imageSize] || { width: 800, height: 450 };
+
     const newThumbnail = {
       Id: Math.max(...thumbnailData.map(t => t.Id)) + 1,
       title: formData.title,
       description: formData.description,
       style: formData.style,
       colorScheme: formData.colorScheme,
-      imageUrl: generateMockImageUrl(formData.title, formData.style, formData.colorScheme),
+      imageUrl: generateMockImageUrl(formData.title, formData.style, formData.colorScheme, dimensions),
       format: formData.format || "png",
+      imageSize: formData.imageSize,
       textEffects: formData.textEffects,
       createdAt: new Date().toISOString(),
-      dimensions: {
-        width: 800,
-        height: 450
-      }
+      dimensions
     };
 
     // Add to mock data
