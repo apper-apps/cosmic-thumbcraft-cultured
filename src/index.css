@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Toast styling overrides */
+.Toastify__toast-container {
+  z-index: 9999;
+}
+
+.Toastify__toast {
+  border-radius: 12px;
+  backdrop-filter: blur(16px);
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+.Toastify__toast--success {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.Toastify__toast--error {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.Toastify__toast--warning {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.Toastify__progress-bar {
+  background: linear-gradient(90deg, #6366F1, #8B5CF6, #EC4899);
+}
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass-effect {
+    backdrop-filter: blur(16px);
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .gradient-border {
+    background: linear-gradient(135deg, #6366F1, #8B5CF6, #EC4899);
+    padding: 2px;
+    border-radius: 12px;
+  }
+  
+  .gradient-border > * {
+    border-radius: 10px;
+    background: #1E293B;
+  }
+  
+  .gradient-text {
+    background: linear-gradient(135deg, #6366F1, #8B5CF6, #EC4899);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease-in-out infinite;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #8B5CF6, #EC4899);
+}

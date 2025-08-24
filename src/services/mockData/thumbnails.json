@@ -1,0 +1,72 @@
+[
+  {
+    "Id": 1,
+    "title": "Amazing Gaming Tutorial",
+    "description": "Learn the best strategies for competitive gaming",
+    "style": "gaming",
+    "colorScheme": "vibrant",
+    "imageUrl": "https://picsum.photos/800/450?random=1",
+    "format": "png",
+    "createdAt": "2024-01-15T10:30:00Z",
+    "dimensions": {
+      "width": 800,
+      "height": 450
+    }
+  },
+  {
+    "Id": 2,
+    "title": "Tech Review 2024",
+    "description": "Latest smartphone comparison and review",
+    "style": "tech",
+    "colorScheme": "professional",
+    "imageUrl": "https://picsum.photos/800/450?random=2",
+    "format": "jpeg",
+    "createdAt": "2024-01-14T15:45:00Z",
+    "dimensions": {
+      "width": 800,
+      "height": 450
+    }
+  },
+  {
+    "Id": 3,
+    "title": "Minimalist Design Tips",
+    "description": "Create clean and effective designs",
+    "style": "minimalist",
+    "colorScheme": "monochrome",
+    "imageUrl": "https://picsum.photos/800/450?random=3",
+    "format": "png",
+    "createdAt": "2024-01-13T09:20:00Z",
+    "dimensions": {
+      "width": 800,
+      "height": 450
+    }
+  },
+  {
+    "Id": 4,
+    "title": "Business Growth Hacks",
+    "description": "Proven strategies for startup success",
+    "style": "professional",
+    "colorScheme": "corporate",
+    "imageUrl": "https://picsum.photos/800/450?random=4",
+    "format": "jpeg",
+    "createdAt": "2024-01-12T14:10:00Z",
+    "dimensions": {
+      "width": 800,
+      "height": 450
+    }
+  },
+  {
+    "Id": 5,
+    "title": "Creative Workflow",
+    "description": "Boost your creative productivity",
+    "style": "vibrant",
+    "colorScheme": "rainbow",
+    "imageUrl": "https://picsum.photos/800/450?random=5",
+    "format": "png",
+    "createdAt": "2024-01-11T11:55:00Z",
+    "dimensions": {
+      "width": 800,
+      "height": 450
+    }
+  }
+]

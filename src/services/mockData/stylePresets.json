@@ -1,0 +1,80 @@
+[
+  {
+    "Id": 1,
+    "name": "Minimalist",
+    "settings": {
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#000000",
+      "accentColor": "#6366F1",
+      "font": "Inter",
+      "spacing": "loose",
+      "effects": []
+    },
+    "preview": "https://picsum.photos/200/120?random=min"
+  },
+  {
+    "Id": 2,
+    "name": "Vibrant",
+    "settings": {
+      "backgroundColor": "linear-gradient(135deg, #FF6B6B, #4ECDC4)",
+      "textColor": "#FFFFFF",
+      "accentColor": "#FFD93D",
+      "font": "Plus Jakarta Sans",
+      "spacing": "compact",
+      "effects": ["glow", "shadow"]
+    },
+    "preview": "https://picsum.photos/200/120?random=vib"
+  },
+  {
+    "Id": 3,
+    "name": "Professional",
+    "settings": {
+      "backgroundColor": "#1E293B",
+      "textColor": "#F8FAFC",
+      "accentColor": "#3B82F6",
+      "font": "Inter",
+      "spacing": "normal",
+      "effects": ["subtle-shadow"]
+    },
+    "preview": "https://picsum.photos/200/120?random=pro"
+  },
+  {
+    "Id": 4,
+    "name": "Gaming",
+    "settings": {
+      "backgroundColor": "linear-gradient(45deg, #0F0F23, #2D1B69)",
+      "textColor": "#00FF88",
+      "accentColor": "#FF0080",
+      "font": "Plus Jakarta Sans",
+      "spacing": "tight",
+      "effects": ["neon-glow", "scanlines"]
+    },
+    "preview": "https://picsum.photos/200/120?random=game"
+  },
+  {
+    "Id": 5,
+    "name": "Tech",
+    "settings": {
+      "backgroundColor": "#000000",
+      "textColor": "#FFFFFF",
+      "accentColor": "#00D4FF",
+      "font": "Inter",
+      "spacing": "normal",
+      "effects": ["circuit-pattern", "blue-glow"]
+    },
+    "preview": "https://picsum.photos/200/120?random=tech"
+  },
+  {
+    "Id": 6,
+    "name": "Corporate",
+    "settings": {
+      "backgroundColor": "#F8FAFC",
+      "textColor": "#1E293B",
+      "accentColor": "#059669",
+      "font": "Inter",
+      "spacing": "generous",
+      "effects": ["clean-lines"]
+    },
+    "preview": "https://picsum.photos/200/120?random=corp"
+  }
+]
