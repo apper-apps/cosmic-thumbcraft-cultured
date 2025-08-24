@@ -12,7 +12,7 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleGenerateThumbnail = async (formData) => {
+const handleGenerateThumbnail = async (formData) => {
     try {
       setLoading(true);
       setError("");
@@ -121,12 +121,13 @@ const Home = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <ThumbnailPreview
+<ThumbnailPreview
               thumbnail={currentThumbnail}
               loading={loading}
               error={error}
               onDownload={handleDownload}
               onRetry={handleRetry}
+              textEffects={currentThumbnail?.textEffects}
             />
           </motion.div>
         </div>

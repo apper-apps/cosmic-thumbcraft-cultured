@@ -12,7 +12,8 @@ const ThumbnailPreview = ({
   error = null,
   onDownload,
   onRetry,
-  className 
+  className,
+  textEffects 
 }) => {
   if (loading) {
     return <Loading type="thumbnail" />;
@@ -50,13 +51,43 @@ const ThumbnailPreview = ({
           />
           
           {/* Title Overlay */}
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-6">
+<div className="absolute inset-0 bg-black/40 flex items-center justify-center p-6">
             <div className="text-center">
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 drop-shadow-lg">
+              <h2 
+                className={cn(
+                  "text-2xl md:text-3xl font-bold mb-2",
+                  textEffects?.gradient?.enabled
+                    ? `bg-gradient-${textEffects.gradient.direction} from-[${textEffects.gradient.colors[0]}] to-[${textEffects.gradient.colors[1]}] bg-clip-text text-transparent`
+                    : "text-white"
+                )}
+                style={{
+                  textShadow: textEffects?.shadow?.enabled
+                    ? `${textEffects.shadow.offsetX}px ${textEffects.shadow.offsetY}px ${textEffects.shadow.blur}px rgba(${parseInt(textEffects.shadow.color.slice(1, 3), 16)}, ${parseInt(textEffects.shadow.color.slice(3, 5), 16)}, ${parseInt(textEffects.shadow.color.slice(5, 7), 16)}, ${textEffects.shadow.opacity})`
+                    : '2px 2px 4px rgba(0,0,0,0.7)',
+                  WebkitTextStroke: textEffects?.outline?.enabled
+                    ? `${textEffects.outline.width}px ${textEffects.outline.color}`
+                    : 'none'
+                }}
+              >
                 {thumbnail.title}
               </h2>
               {thumbnail.description && (
-                <p className="text-white/90 text-base md:text-lg drop-shadow-md">
+                <p 
+                  className={cn(
+                    "text-base md:text-lg",
+                    textEffects?.gradient?.enabled
+                      ? `bg-gradient-${textEffects.gradient.direction} from-[${textEffects.gradient.colors[0]}] to-[${textEffects.gradient.colors[1]}] bg-clip-text text-transparent opacity-90`
+                      : "text-white/90"
+                  )}
+                  style={{
+                    textShadow: textEffects?.shadow?.enabled
+                      ? `${textEffects.shadow.offsetX}px ${textEffects.shadow.offsetY}px ${textEffects.shadow.blur}px rgba(${parseInt(textEffects.shadow.color.slice(1, 3), 16)}, ${parseInt(textEffects.shadow.color.slice(3, 5), 16)}, ${parseInt(textEffects.shadow.color.slice(5, 7), 16)}, ${textEffects.shadow.opacity * 0.8})`
+                      : '1px 1px 2px rgba(0,0,0,0.7)',
+                    WebkitTextStroke: textEffects?.outline?.enabled
+                      ? `${Math.max(1, textEffects.outline.width - 1)}px ${textEffects.outline.color}`
+                      : 'none'
+                  }}
+                >
                   {thumbnail.description}
                 </p>
               )}

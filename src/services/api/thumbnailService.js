@@ -25,7 +25,7 @@ export const thumbnailService = {
     return { ...thumbnail };
   },
 
-  async generateThumbnail(thumbnailData) {
+async generateThumbnail(formData) {
     await delay(2000); // Longer delay to simulate AI generation
     
     // Simulate occasional API failures
@@ -35,12 +35,13 @@ export const thumbnailService = {
 
     const newThumbnail = {
       Id: Math.max(...thumbnailData.map(t => t.Id)) + 1,
-      title: thumbnailData.title,
-      description: thumbnailData.description,
-      style: thumbnailData.style,
-      colorScheme: thumbnailData.colorScheme,
-      imageUrl: generateMockImageUrl(thumbnailData.title, thumbnailData.style, thumbnailData.colorScheme),
-      format: thumbnailData.format || "png",
+      title: formData.title,
+      description: formData.description,
+      style: formData.style,
+      colorScheme: formData.colorScheme,
+      imageUrl: generateMockImageUrl(formData.title, formData.style, formData.colorScheme),
+      format: formData.format || "png",
+      textEffects: formData.textEffects,
       createdAt: new Date().toISOString(),
       dimensions: {
         width: 800,
