@@ -13,7 +13,10 @@ const ThumbnailPreview = ({
   onDownload,
   onRetry,
   className,
-  textEffects 
+  textEffects,
+  textPosition = { x: 50, y: 50 },
+  onTextPositionChange,
+  showPositioning = false
 }) => {
   if (loading) {
     return <Loading type="thumbnail" />;
@@ -52,7 +55,49 @@ const ThumbnailPreview = ({
           
           {/* Title Overlay */}
 <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-6">
-            <div className="text-center">
+              {/* Text Position Overlay */}
+              {showPositioning && thumbnail && (
+                <div 
+                  className="absolute inset-4 border-2 border-dashed border-primary/50 rounded-lg cursor-crosshair"
+                  onClick={(e) => {
+                    if (onTextPositionChange) {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = ((e.clientX - rect.left) / rect.width) * 100;
+                      const y = ((e.clientY - rect.top) / rect.height) * 100;
+                      onTextPositionChange({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) });
+                    }
+                  }}
+                >
+                  {/* Position Indicator */}
+                  <div 
+                    className="absolute w-4 h-4 bg-primary rounded-full border-2 border-white shadow-lg transform -translate-x-2 -translate-y-2 transition-all duration-200"
+                    style={{
+                      left: `${textPosition.x}%`,
+                      top: `${textPosition.y}%`
+                    }}
+                  />
+                  {/* Grid Lines */}
+                  <div className="absolute inset-0 opacity-20">
+                    <div className="absolute left-1/3 top-0 bottom-0 w-px bg-primary"></div>
+                    <div className="absolute left-2/3 top-0 bottom-0 w-px bg-primary"></div>
+                    <div className="absolute top-1/3 left-0 right-0 h-px bg-primary"></div>
+                    <div className="absolute top-2/3 left-0 right-0 h-px bg-primary"></div>
+                  </div>
+                  {/* Position Tooltip */}
+                  <div 
+                    className="absolute bg-black/80 text-white text-xs px-2 py-1 rounded pointer-events-none"
+                    style={{
+                      left: `${textPosition.x}%`,
+                      top: `${Math.max(0, textPosition.y - 8)}%`,
+                      transform: 'translateX(-50%)'
+                    }}
+                  >
+                    {Math.round(textPosition.x)}%, {Math.round(textPosition.y)}%
+                  </div>
+                </div>
+              )}
+              
+            <div className="text-center relative z-10">
               <h2 
                 className={cn(
                   "text-2xl md:text-3xl font-bold mb-2",

@@ -7,18 +7,49 @@ import ThumbnailPreview from "@/components/molecules/ThumbnailPreview";
 import StylePresetSelector from "@/components/organisms/StylePresetSelector";
 
 const Home = () => {
-  const [currentThumbnail, setCurrentThumbnail] = useState(null);
+const [currentThumbnail, setCurrentThumbnail] = useState(null);
   const [selectedPreset, setSelectedPreset] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [liveMode, setLiveMode] = useState(true);
+  const [textPosition, setTextPosition] = useState({ x: 50, y: 50 });
+const autoGenerate = async (formData) => {
+    if (!liveMode || !formData.title.trim()) return;
+    
+    try {
+      setError("");
+      let finalFormData = { 
+        ...formData, 
+        textPosition,
+        liveMode: true 
+      };
+      
+      if (selectedPreset) {
+        finalFormData = {
+          ...finalFormData,
+          style: selectedPreset.name.toLowerCase(),
+          presetSettings: selectedPreset.settings
+        };
+      }
+      
+      const thumbnail = await thumbnailService.generateThumbnail(finalFormData);
+      setCurrentThumbnail(thumbnail);
+    } catch (err) {
+      setError(err.message || "Auto-generation failed");
+    }
+  };
 
-const handleGenerateThumbnail = async (formData) => {
+  const handleGenerateThumbnail = async (formData) => {
     try {
       setLoading(true);
       setError("");
       
       // Apply preset settings if selected
-      let finalFormData = { ...formData };
+      let finalFormData = { 
+        ...formData, 
+        textPosition,
+        liveMode: false 
+      };
       if (selectedPreset) {
         finalFormData = {
           ...finalFormData,
@@ -35,6 +66,23 @@ const handleGenerateThumbnail = async (formData) => {
       toast.error("Generation failed. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleTextPositionChange = (newPosition) => {
+    setTextPosition(newPosition);
+    if (liveMode && currentThumbnail) {
+      // Trigger auto-generation with new position
+      const formData = {
+        title: currentThumbnail.title,
+        description: currentThumbnail.description,
+        style: currentThumbnail.style,
+        colorScheme: currentThumbnail.colorScheme,
+        format: currentThumbnail.format,
+        imageSize: currentThumbnail.imageSize,
+        textEffects: currentThumbnail.textEffects
+      };
+      autoGenerate(formData);
     }
   };
 
@@ -109,9 +157,12 @@ const handleGenerateThumbnail = async (formData) => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <ThumbnailForm
+<ThumbnailForm
               onSubmit={handleGenerateThumbnail}
+              onAutoGenerate={autoGenerate}
               loading={loading}
+              liveMode={liveMode}
+              onLiveModeChange={setLiveMode}
             />
           </motion.div>
 
@@ -128,6 +179,9 @@ const handleGenerateThumbnail = async (formData) => {
               onDownload={handleDownload}
               onRetry={handleRetry}
               textEffects={currentThumbnail?.textEffects}
+              textPosition={textPosition}
+              onTextPositionChange={handleTextPositionChange}
+              showPositioning={true}
             />
           </motion.div>
         </div>

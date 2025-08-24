@@ -1,13 +1,19 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
+import ApperIcon from "@/components/ApperIcon";
+import FormField from "@/components/molecules/FormField";
 import Card from "@/components/atoms/Card";
-import Button from "@/components/atoms/Button";
-import Input from "@/components/atoms/Input";
 import Textarea from "@/components/atoms/Textarea";
 import Select from "@/components/atoms/Select";
-import FormField from "@/components/molecules/FormField";
-import ApperIcon from "@/components/ApperIcon";
-const ThumbnailForm = ({ onSubmit, loading = false }) => {
+import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
+const ThumbnailForm = ({ 
+  onSubmit, 
+  onAutoGenerate,
+  loading = false, 
+  liveMode = true, 
+  onLiveModeChange 
+}) => {
 const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -15,11 +21,13 @@ const [formData, setFormData] = useState({
     colorScheme: "",
     format: "png",
     imageSize: "youtube-thumbnail",
+    textPosition: { x: 50, y: 50 },
     textEffects: {
       gradient: {
         enabled: false,
-        colors: ["#ffffff", "#e5e5e5"],
-        direction: "to-br"
+        colors: ["#ffffff", "#e5e5e5", "#a855f7"],
+        direction: "to-br",
+        type: "linear"
       },
       shadow: {
         enabled: true,
@@ -27,13 +35,20 @@ const [formData, setFormData] = useState({
         offsetX: 2,
         offsetY: 2,
         color: "#000000",
-        opacity: 0.7
+        opacity: 0.7,
+        spread: 0
       },
       outline: {
         enabled: false,
         width: 2,
         color: "#ffffff",
         style: "solid"
+      },
+      glow: {
+        enabled: false,
+        color: "#6366f1",
+        intensity: 0.5,
+        size: 10
       }
     }
   });
@@ -115,8 +130,30 @@ const handleInputChange = (field, value) => {
     } else {
       setFormData(prev => ({ ...prev, [field]: value }));
     }
+    
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: "" }));
+    }
+    
+    // Auto-generate if live mode is enabled and we have required data
+    if (liveMode && onAutoGenerate && (field === 'title' || field === 'description' || field.includes('textEffects'))) {
+      setTimeout(() => {
+        const newFormData = field.includes('.') ? (() => {
+          const [parent, child, subchild] = field.split('.');
+          return {
+            ...formData,
+            [parent]: {
+              ...formData[parent],
+              [child]: subchild ? {
+                ...formData[parent][child],
+                [subchild]: value
+              } : value
+            }
+          };
+        })() : { ...formData, [field]: value };
+        
+        onAutoGenerate(newFormData);
+      }, 300);
     }
   };
 
@@ -128,11 +165,13 @@ setFormData({
       colorScheme: "",
       format: "png",
       imageSize: "youtube-thumbnail",
+      textPosition: { x: 50, y: 50 },
       textEffects: {
         gradient: {
           enabled: false,
-          colors: ["#ffffff", "#e5e5e5"],
-          direction: "to-br"
+          colors: ["#ffffff", "#e5e5e5", "#a855f7"],
+          direction: "to-br",
+          type: "linear"
         },
         shadow: {
           enabled: true,
@@ -140,13 +179,20 @@ setFormData({
           offsetX: 2,
           offsetY: 2,
           color: "#000000",
-          opacity: 0.7
+          opacity: 0.7,
+          spread: 0
         },
         outline: {
           enabled: false,
           width: 2,
           color: "#ffffff",
           style: "solid"
+        },
+        glow: {
+          enabled: false,
+          color: "#6366f1",
+          intensity: 0.5,
+          size: 10
         }
       }
     });
@@ -521,18 +567,45 @@ setFormData({
                   </div>
                 )}
               </div>
-            </motion.div>
+</motion.div>
           )}
         </div>
-        <div className="flex gap-3 pt-4">
-          <Button
-            type="submit"
-            variant="primary"
-            loading={loading}
-            icon="Sparkles"
-            className="flex-1"
+
+        {/* Live Mode Toggle */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="flex items-center justify-between"
+        >
+<div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => onLiveModeChange?.(!liveMode)}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+              liveMode ? 'bg-gradient-to-r from-primary to-secondary' : 'bg-white/20'
+            }`}
           >
-            Generate Thumbnail
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                liveMode ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
+          <span className="text-sm font-medium text-white">
+            Live Mode {liveMode ? 'On' : 'Off'}
+          </span>
+          <ApperIcon name="Zap" className={`w-4 h-4 ${liveMode ? 'text-primary' : 'text-white/50'}`} />
+        </div>
+
+        <Button
+          type="submit"
+          variant="primary"
+          loading={loading}
+          icon="Sparkles"
+          className="flex-1 max-w-xs"
+        >
+          Generate Thumbnail
           </Button>
           
           <Button

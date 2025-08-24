@@ -1,7 +1,7 @@
 import thumbnailData from "@/services/mockData/thumbnails.json";
 
 const SIMULATED_DELAY = 300;
-
+const LIVE_MODE_DELAY = 100;
 // Mock API response for image generation
 const generateMockImageUrl = (title, style, colorScheme, dimensions = { width: 800, height: 450 }) => {
   const seed = title.toLowerCase().replace(/\s+/g, '-');
@@ -26,10 +26,13 @@ export const thumbnailService = {
   },
 
 async generateThumbnail(formData) {
-    await delay(2000); // Longer delay to simulate AI generation
+    // Use shorter delay for live mode
+    const delayTime = formData.liveMode ? LIVE_MODE_DELAY : 2000;
+    await delay(delayTime);
     
-    // Simulate occasional API failures
-    if (Math.random() < 0.1) {
+    // Reduce failure rate for live mode
+    const failureRate = formData.liveMode ? 0.02 : 0.1;
+    if (Math.random() < failureRate) {
       throw new Error("AI image generation service is temporarily unavailable. Please try again.");
     }
 
@@ -56,13 +59,17 @@ async generateThumbnail(formData) {
       imageUrl: generateMockImageUrl(formData.title, formData.style, formData.colorScheme, dimensions),
       format: formData.format || "png",
       imageSize: formData.imageSize,
-      textEffects: formData.textEffects,
+      textEffects: formData.textEffects || {},
+      textPosition: formData.textPosition || { x: 50, y: 50 },
+      liveGenerated: formData.liveMode || false,
       createdAt: new Date().toISOString(),
       dimensions
     };
 
-    // Add to mock data
-    thumbnailData.unshift(newThumbnail);
+    // Only add to persistent data if not live mode
+    if (!formData.liveMode) {
+      thumbnailData.unshift(newThumbnail);
+    }
     
     return { ...newThumbnail };
   },
