@@ -86,7 +86,7 @@ const autoGenerate = async (formData) => {
     }
   };
 
-  const handleDownload = async (format) => {
+const handleDownload = async (format) => {
     if (!currentThumbnail) return;
     
     try {
@@ -100,8 +100,16 @@ const autoGenerate = async (formData) => {
       link.click();
       document.body.removeChild(link);
       
+      // Clean up blob URL if it was created for AI-generated images
+      if (downloadData.isBlob) {
+        setTimeout(() => {
+          URL.revokeObjectURL(downloadData.downloadUrl);
+        }, 1000);
+      }
+      
       toast.success(`Downloaded as ${format.toUpperCase()}`);
     } catch (err) {
+      console.error("Download error:", err);
       toast.error("Download failed. Please try again.");
     }
   };
